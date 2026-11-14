@@ -6,6 +6,7 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
+import { useProveedores } from '@/features/proveedores/proveedores-provider';
 import { useAppTheme } from '@/theme';
 
 import { useSimulaciones } from './simulaciones';
@@ -14,11 +15,12 @@ import { useSimulaciones } from './simulaciones';
  * Herramientas para probar el flujo sin servidor. Solo existen mientras se desarrolla:
  * van en la barra de arriba a través de `RanuraDev` y en la app publicada no aparecen.
  * - Flecha circular: borra todo y vuelve a la bienvenida.
- * - Probeta: hace de servidor.
+ * - Probeta: hace de servidor (vencer el plan de un proveedor, restaurar la lista).
  */
 export function HerramientasDev() {
   const { spacing } = useAppTheme();
   const { reiniciar } = useCuenta();
+  const { restaurar } = useProveedores();
   const simulaciones = useSimulaciones();
   const [abierto, setAbierto] = useState(false);
 
@@ -27,6 +29,7 @@ export function HerramientasDev() {
       <Pressable
         onPress={async () => {
           await reiniciar();
+          restaurar();
           // Las rutas protegidas sacan las pantallas con sesión; esto cierra también las
           // abiertas sin sesión (entrada, ayuda, legal) y deja solo la bienvenida.
           router.dismissTo('/');
