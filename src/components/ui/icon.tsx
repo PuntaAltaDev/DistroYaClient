@@ -1,0 +1,37 @@
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+
+import { useAppTheme, type AppColors } from '@/theme';
+
+/**
+ * Íconos de la app. Cada uno tiene su versión para iPhone (SF Symbols)
+ * y para Android / web (Material Symbols), así se ven nativos en cada teléfono.
+ */
+const ICONS = {
+  back: { ios: 'arrow.left', android: 'arrow_back', web: 'arrow_back' },
+  forward: { ios: 'arrow.right', android: 'arrow_forward', web: 'arrow_forward' },
+  camera: { ios: 'camera', android: 'photo_camera', web: 'photo_camera' },
+  check: { ios: 'checkmark', android: 'check', web: 'check' },
+  document: { ios: 'doc.text', android: 'description', web: 'description' },
+  upload: { ios: 'arrow.up.doc', android: 'upload_file', web: 'upload_file' },
+  close: { ios: 'xmark', android: 'close', web: 'close' },
+  edit: { ios: 'pencil', android: 'edit', web: 'edit' },
+  clock: { ios: 'clock', android: 'schedule', web: 'schedule' },
+  restart: { ios: 'arrow.counterclockwise', android: 'restart_alt', web: 'restart_alt' },
+  simular: { ios: 'flask', android: 'science', web: 'science' },
+  ajustes: { ios: 'gearshape', android: 'settings', web: 'settings' },
+  chat: { ios: 'message', android: 'chat', web: 'chat' },
+  phone: { ios: 'phone', android: 'call', web: 'call' },
+} as const satisfies Record<string, SymbolViewProps['name']>;
+
+export type IconName = keyof typeof ICONS;
+
+type IconProps = {
+  name: IconName;
+  size?: number;
+  color?: keyof AppColors;
+};
+
+export function Icon({ name, size, color = 'text' }: IconProps) {
+  const { colors, sizes } = useAppTheme();
+  return <SymbolView name={ICONS[name]} size={size ?? sizes.iconMd} tintColor={colors[color]} />;
+}
