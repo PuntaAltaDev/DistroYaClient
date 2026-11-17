@@ -23,18 +23,29 @@ describe('cargarCuenta', () => {
       metodo: 'email',
       email: 'bar@correo.com',
       terminos: { version: '2026-11-14', fecha: '2026-11-14T10:00:00.000Z' },
+      favoritos: [{ proveedorId: 'p1', avisosActivos: false, desde: '2026-11-15T10:00:00.000Z' }],
+      avisos: [],
     };
     guardado(cuenta);
     expect(await cargarCuenta()).toEqual(cuenta);
   });
 
   it('descarta datos con otra forma', async () => {
-    guardado({ iniciada: true, metodo: 'facebook', email: 3, terminos: { version: 1 } });
+    guardado({
+      iniciada: true,
+      metodo: 'facebook',
+      email: 3,
+      terminos: { version: 1 },
+      favoritos: 'todos',
+      avisos: [{ id: 1 }],
+    });
     expect(await cargarCuenta()).toEqual({
       iniciada: true,
       metodo: undefined,
       email: undefined,
       terminos: undefined,
+      favoritos: [],
+      avisos: [],
     });
   });
 });

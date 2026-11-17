@@ -1,3 +1,5 @@
+import { avisosGuardados, type AvisoCliente } from '@/features/avisos/avisos';
+import { favoritosGuardados, type Favorito } from '@/features/favoritos/favoritos';
 import { borrar, guardar, leer } from '@/lib/almacen';
 
 /** Cómo entró: con un código al email o con su cuenta de Google. */
@@ -16,9 +18,13 @@ export type Cuenta = {
   email?: string;
   /** Qué versión de los términos y la privacidad aceptó, y cuándo (ISO). Ver `features/legal`. */
   terminos?: { version: string; fecha: string };
+  /** Proveedores favoritos. Con la API, se guardan en el servidor. */
+  favoritos: Favorito[];
+  /** Bandeja de avisos de proveedores. Con la API, la manda el servidor. */
+  avisos: AvisoCliente[];
 };
 
-export const CUENTA_INICIAL: Cuenta = { iniciada: false };
+export const CUENTA_INICIAL: Cuenta = { iniciada: false, favoritos: [], avisos: [] };
 
 /** La "v1" permite cambiar la forma de los datos más adelante sin romper lo ya guardado. */
 const CLAVE = 'cuenta.v1';
@@ -37,6 +43,8 @@ export async function cargarCuenta(): Promise<Cuenta> {
       typeof guardada.terminos?.version === 'string' && typeof guardada.terminos.fecha === 'string'
         ? guardada.terminos
         : undefined,
+    favoritos: favoritosGuardados(guardada.favoritos),
+    avisos: avisosGuardados(guardada.avisos),
   };
 }
 
