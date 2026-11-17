@@ -1,15 +1,16 @@
 import { router, type Href } from 'expo-router';
 
-import { ordenarAvisos, rutaDeAviso } from '@/features/avisos/avisos';
+import { rutaDeAviso } from '@/features/avisos/avisos';
 import { BandejaScreen } from '@/features/avisos/bandeja-screen';
-import { useCuenta } from '@/features/cuenta/cuenta-provider';
+import { useBandeja } from '@/features/cuenta/use-bandeja';
 
-/** "/avisos": bandeja de avisos de proveedores. Solo con sesión. */
+/** "/avisos": bandeja de avisos de proveedores. Solo con sesión. Al abrirla, todo queda leído. */
 export default function Avisos() {
-  const { cuenta } = useCuenta();
+  const { avisos, nuevos } = useBandeja();
   return (
     <BandejaScreen
-      avisos={ordenarAvisos(cuenta.avisos)}
+      avisos={avisos}
+      nuevos={nuevos}
       alVolver={() => router.back()}
       alAbrir={(aviso) => router.push(rutaDeAviso(aviso) as Href)}
     />

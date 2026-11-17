@@ -13,6 +13,8 @@ import type { AvisoCliente } from './avisos';
 type BandejaScreenProps = {
   /** Del más nuevo al más viejo. */
   avisos: readonly AvisoCliente[];
+  /** Ids de los que eran nuevos al abrir la bandeja: llevan un punto. */
+  nuevos: readonly string[];
   alVolver: () => void;
   /** Abre el perfil del proveedor que mandó el aviso. */
   alAbrir: (aviso: AvisoCliente) => void;
@@ -21,7 +23,7 @@ type BandejaScreenProps = {
 const ETIQUETA = { aviso: 'AVISO', 'lista-nueva': 'LISTA NUEVA' } as const;
 
 /** Bandeja de avisos de proveedores: promociones y listas nuevas de favoritos. */
-export function BandejaScreen({ avisos, alVolver, alAbrir }: BandejaScreenProps) {
+export function BandejaScreen({ avisos, nuevos, alVolver, alAbrir }: BandejaScreenProps) {
   const { colors, spacing } = useAppTheme();
 
   return (
@@ -36,36 +38,45 @@ export function BandejaScreen({ avisos, alVolver, alAbrir }: BandejaScreenProps)
           </AppText>
         ) : (
           <View style={[styles.lista, { borderTopColor: colors.border }]}>
-            {avisos.map((aviso) => (
-              <Pressable
-                key={aviso.id}
-                onPress={() => alAbrir(aviso)}
-                accessibilityRole="button"
-                accessibilityLabel={`${aviso.proveedorNombre}: ${aviso.titulo}. ${aviso.texto}`}
-                style={({ pressed }) => [
-                  styles.fila,
-                  {
-                    gap: spacing.md,
-                    paddingVertical: spacing.md,
-                    borderBottomColor: colors.border,
-                    backgroundColor: pressed ? colors.primarySoft : 'transparent',
-                  },
-                ]}>
-                <View style={[styles.textos, { gap: spacing.xxs }]}>
-                  <AppText variant="overline" color="primaryText" numberOfLines={1}>
-                    {ETIQUETA[aviso.tipo]} · {aviso.proveedorNombre.toUpperCase()}
-                  </AppText>
-                  <AppText variant="headline">{aviso.titulo}</AppText>
-                  <AppText variant="subhead" color="textSecondary">
-                    {aviso.texto}
-                  </AppText>
-                  <AppText variant="footnote" color="textMuted">
-                    {fechaCorta(new Date(aviso.fecha))}
-                  </AppText>
-                </View>
-                <Icon name="forward" size={18} color="textSecondary" />
-              </Pressable>
-            ))}
+            {avisos.map((aviso) => {
+              const nuevo = nuevos.includes(aviso.id);
+              return (
+                <Pressable
+                  key={aviso.id}
+                  onPress={() => alAbrir(aviso)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${nuevo ? 'Nuevo. ' : ''}${aviso.proveedorNombre}: ${aviso.titulo}. ${aviso.texto}`}
+                  style={({ pressed }) => [
+                    styles.fila,
+                    {
+                      gap: spacing.md,
+                      paddingVertical: spacing.md,
+                      borderBottomColor: colors.border,
+                      backgroundColor: pressed ? colors.primarySoft : 'transparent',
+                    },
+                  ]}>
+                  <View
+                    style={[
+                      styles.punto,
+                      { backgroundColor: nuevo ? colors.primary : 'transparent' },
+                    ]}
+                  />
+                  <View style={[styles.textos, { gap: spacing.xxs }]}>
+                    <AppText variant="overline" color="primaryText" numberOfLines={1}>
+                      {ETIQUETA[aviso.tipo]} · {aviso.proveedorNombre.toUpperCase()}
+                    </AppText>
+                    <AppText variant="headline">{aviso.titulo}</AppText>
+                    <AppText variant="subhead" color="textSecondary">
+                      {aviso.texto}
+                    </AppText>
+                    <AppText variant="footnote" color="textMuted">
+                      {fechaCorta(new Date(aviso.fecha))}
+                    </AppText>
+                  </View>
+                  <Icon name="forward" size={18} color="textSecondary" />
+                </Pressable>
+              );
+            })}
           </View>
         )}
       </Animated.View>
@@ -81,4 +92,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   textos: { flex: 1 },
+  punto: { width: 8, height: 8, borderRadius: 4 },
 });

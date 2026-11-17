@@ -23,7 +23,13 @@ type BarraSuperiorProps = {
 };
 
 /** Un ícono de la barra de arriba que abre otra pantalla. */
-export type IconoBarra = { icono: IconName; etiqueta: string; onPress: () => void };
+export type IconoBarra = {
+  icono: IconName;
+  etiqueta: string;
+  onPress: () => void;
+  /** Número chico sobre el ícono (ej.: avisos nuevos). Vacío o sin dar: no se muestra. */
+  contador?: string;
+};
 
 /** Barra de arriba: marca a la izquierda, íconos a la derecha y una línea debajo. */
 export function BarraSuperior({ derecha, alVolver, iconos, progreso }: BarraSuperiorProps) {
@@ -72,14 +78,21 @@ export function BarraSuperior({ derecha, alVolver, iconos, progreso }: BarraSupe
         <View style={[styles.fila, { gap: spacing.lg }]}>
           {herramientasDev}
           <CambioDeModo />
-          {iconos?.map(({ icono, etiqueta, onPress }) => (
+          {iconos?.map(({ icono, etiqueta, onPress, contador }) => (
             <Pressable
               key={etiqueta}
               onPress={onPress}
               hitSlop={10}
               accessibilityRole="button"
-              accessibilityLabel={etiqueta}>
+              accessibilityLabel={contador ? `${etiqueta}: ${contador} nuevos` : etiqueta}>
               <Icon name={icono} size={18} color="textSecondary" />
+              {contador ? (
+                <View style={[styles.contador, { backgroundColor: colors.primary }]}>
+                  <AppText variant="caption" color="onPrimary" style={styles.contadorTexto}>
+                    {contador}
+                  </AppText>
+                </View>
+              ) : null}
             </Pressable>
           ))}
           {derecha ? (
@@ -178,6 +191,18 @@ const styles = StyleSheet.create({
   fila: { flexDirection: 'row', alignItems: 'center' },
   avance: { height: 2.5 },
   derecha: { letterSpacing: 2 },
+  contador: {
+    position: 'absolute',
+    top: -8,
+    right: -10,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contadorTexto: { lineHeight: 18 },
   modo: { width: 14, height: 14, borderRadius: 7, borderWidth: 1.5, overflow: 'hidden' },
   modoMitad: { width: '50%', height: '100%' },
 });
