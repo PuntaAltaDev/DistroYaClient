@@ -4,10 +4,13 @@ import {
   AVISOS_MAX,
   avisoListaNueva,
   avisosGuardados,
+  contadorNuevos,
   debeRecibir,
+  leidosGuardados,
   notificacionDe,
   ordenarAvisos,
   rutaDeAviso,
+  sinLeer,
   sumarAviso,
   type AvisoCliente,
 } from '../avisos';
@@ -88,5 +91,24 @@ describe('notificacionDe', () => {
     expect(notificacionDe(aviso())).toEqual({ titulo: 'Distri Sur', texto: 'Promo: 10% menos' });
     const lista = avisoListaNueva({ id: 'p1', razonSocial: 'Distri Sur' }, AHORA);
     expect(notificacionDe(lista).texto).toBe('Distri Sur publicó una lista nueva.');
+  });
+});
+
+describe('leídos', () => {
+  it('sin leer son los que no están en leídos', () => {
+    const avisos = [aviso({ id: 'a1' }), aviso({ id: 'a2' })];
+    expect(sinLeer(avisos, ['a1']).map((a) => a.id)).toEqual(['a2']);
+    expect(sinLeer(avisos, ['a1', 'a2'])).toEqual([]);
+  });
+
+  it('el contador no muestra nada sin nuevos y corta en 9+', () => {
+    expect(contadorNuevos(0)).toBe('');
+    expect(contadorNuevos(3)).toBe('3');
+    expect(contadorNuevos(12)).toBe('9+');
+  });
+
+  it('descarta los leídos dañados y repetidos', () => {
+    expect(leidosGuardados('a1')).toEqual([]);
+    expect(leidosGuardados(['a1', 'a1', 2, null, 'a2'])).toEqual(['a1', 'a2']);
   });
 });

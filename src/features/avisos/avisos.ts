@@ -81,3 +81,17 @@ export function avisosGuardados(valor: unknown): AvisoCliente[] {
     )
     .slice(0, AVISOS_MAX);
 }
+
+/** Los avisos que todavía no vio (los que no están en `leidos`). */
+export const sinLeer = (avisos: readonly AvisoCliente[], leidos: readonly string[]) =>
+  avisos.filter((a) => !leidos.includes(a.id));
+
+/** Lo que va sobre el ícono de avisos: nada sin nuevos, y "9+" con más de nueve. */
+export const contadorNuevos = (cantidad: number) =>
+  cantidad <= 0 ? '' : cantidad > 9 ? '9+' : String(cantidad);
+
+/** Lee los ids leídos guardados: descarta lo dañado y los repetidos. */
+export function leidosGuardados(valor: unknown): string[] {
+  if (!Array.isArray(valor)) return [];
+  return [...new Set(valor.filter((id): id is string => typeof id === 'string'))];
+}
