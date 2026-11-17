@@ -5,8 +5,10 @@ import { AppText } from '@/components/ui/app-text';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Marco } from '@/components/ui/marco';
 import { LogoIniciales } from '@/features/proveedores/logo-iniciales';
-import { fechaCorta, type Proveedor } from '@/features/proveedores/proveedor';
+import { descripcionVisible, fechaCorta, type Proveedor } from '@/features/proveedores/proveedor';
 import { useAppTheme } from '@/theme';
+
+import { DescripcionPlegable } from './descripcion-plegable';
 
 type FichaScreenProps = {
   proveedor: Proveedor;
@@ -17,7 +19,7 @@ type FichaScreenProps = {
   alLlamar: () => void;
 };
 
-/** Ficha del proveedor: quién es, sus rubros, cómo contactarlo y su lista de precios. */
+/** Ficha del proveedor: quién es, sus rubros, su descripción (plegada), cómo contactarlo y su lista. */
 export function FichaScreen({
   proveedor: p,
   alVolver,
@@ -58,6 +60,13 @@ export function FichaScreen({
           ))}
         </View>
       </Animated.View>
+
+      {/* Sin descripción no hay bloque (ni su espacio). */}
+      {descripcionVisible(p.descripcion) ? (
+        <Animated.View entering={FadeInDown.delay(120).duration(400)}>
+          <DescripcionPlegable texto={p.descripcion} />
+        </Animated.View>
+      ) : null}
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.sm }}>
         <AppText variant="overline" color="textSecondary">

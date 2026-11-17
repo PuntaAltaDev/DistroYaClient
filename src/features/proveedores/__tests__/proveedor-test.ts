@@ -1,8 +1,10 @@
 import type { ProveedorApi } from '@/data/proveedores';
 
 import {
+  descripcionVisible,
   desdeApi,
   iniciales,
+  LARGO_DESCRIPCION,
   linkTelefono,
   linkWhatsapp,
   numeroWhatsapp,
@@ -80,5 +82,20 @@ describe('iniciales', () => {
     expect(iniciales('Distribuidora del Sur')).toBe('DS');
     expect(iniciales('Bodega Los Álamos')).toBe('BL');
     expect(iniciales('hielo polar')).toBe('HP');
+  });
+});
+
+describe('descripcionVisible', () => {
+  it('sin texto, queda vacía (el bloque no se muestra)', () => {
+    expect(descripcionVisible(undefined)).toBe('');
+    expect(descripcionVisible('  \n  ')).toBe('');
+  });
+
+  it('conserva los saltos de línea pero no más de un renglón vacío', () => {
+    expect(descripcionVisible('  Hola\r\nChau\n\n\n\nFin  ')).toBe('Hola\nChau\n\nFin');
+  });
+
+  it('corta en el largo máximo', () => {
+    expect(descripcionVisible('a'.repeat(LARGO_DESCRIPCION + 50))).toHaveLength(LARGO_DESCRIPCION);
   });
 });

@@ -21,6 +21,7 @@ const ICONS = {
   ajustes: { ios: 'gearshape', android: 'settings', web: 'settings' },
   chat: { ios: 'message', android: 'chat', web: 'chat' },
   phone: { ios: 'phone', android: 'call', web: 'call' },
+  expand: { ios: 'chevron.down', android: 'expand_more', web: 'expand_more' },
 } as const satisfies Record<string, SymbolViewProps['name']>;
 
 export type IconName = keyof typeof ICONS;

@@ -10,6 +10,8 @@ export type ProveedorApi = {
   direccion: string;
   localidad: string;
   provincia: string;
+  /** Sobre el proveedor, escrito por él (máximo 300 caracteres, puede tener saltos de línea). */
+  descripcion?: string;
   /** Número de WhatsApp tal como lo cargó el proveedor. */
   whatsapp: string;
   telefono?: string;
@@ -39,6 +41,8 @@ export function proveedoresDePrueba(ahora = new Date()): ProveedorApi[] {
   return [
     {
       id: 'p1',
+      descripcion:
+        'Distribuimos bebidas en Bahía Blanca y la zona desde 1998.\nEntrega en 24 horas, pedido mínimo de 10 cajas.',
       razonSocial: 'Distribuidora del Sur',
       rubros: ['Cervezas', 'Gaseosas', 'Aguas'],
       direccion: 'Av. Colón 1250',
@@ -52,6 +56,8 @@ export function proveedoresDePrueba(ahora = new Date()): ProveedorApi[] {
     },
     {
       id: 'p2',
+      descripcion:
+        'Bodega familiar. Vinos de la costa atlántica y espumantes de método tradicional.',
       razonSocial: 'Bodega Los Álamos',
       rubros: ['Vinos', 'Espumantes'],
       direccion: 'Ruta 3 km 690',
@@ -77,6 +83,8 @@ export function proveedoresDePrueba(ahora = new Date()): ProveedorApi[] {
     },
     {
       id: 'p4',
+      descripcion:
+        'Gin, vermut y amargos de elaboración propia.\nVisitas a la destilería con reserva.',
       razonSocial: 'Destilería Ñandú',
       rubros: ['Destilados', 'Aperitivos'],
       direccion: 'Sarmiento 88',

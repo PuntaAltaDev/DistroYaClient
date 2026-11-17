@@ -85,3 +85,20 @@ export function iniciales(razonSocial: string) {
     .slice(0, 2)
     .toUpperCase();
 }
+
+/** Largo máximo de la descripción que escribe el proveedor. */
+export const LARGO_DESCRIPCION = 300;
+
+/**
+ * La descripción lista para mostrar: sin espacios al principio ni al final, sin más de un
+ * renglón vacío seguido y cortada en el largo máximo. Vacía si no escribió nada (no se muestra).
+ */
+export function descripcionVisible(texto: string | undefined) {
+  if (!texto) return '';
+  return texto
+    .replace(/\r\n?/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, LARGO_DESCRIPCION)
+    .trimEnd();
+}
