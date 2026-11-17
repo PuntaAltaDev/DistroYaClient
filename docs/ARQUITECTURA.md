@@ -34,7 +34,7 @@ src/
     cuenta/       Sesión del cliente guardada en el teléfono.
     proveedores/  Qué es un proveedor, cuándo su plan está vigente, links de contacto y la lista.
     buscador/     Búsqueda por texto y rubros, y la pantalla de inicio con los resultados.
-    ficha/        Ficha del proveedor: contacto y lista de precios.
+    ficha/        Ficha del proveedor: descripción plegable, contacto y lista de precios.
     ajustes/      Apariencia, cerrar sesión, eliminar cuenta, ayuda y legal.
     ayuda/        Contacto (WhatsApp y email) y preguntas frecuentes.
     legal/        Términos y condiciones, política de privacidad y su versión vigente.
@@ -103,6 +103,7 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **Navegación con rutas protegidas** (`Stack.Protected` en `app/_layout.tsx`): sin sesión, `/` y `/entrada`; con sesión, `/buscar`, `/proveedor/[id]` y `/ajustes`. Ayuda y legales están siempre. Al entrar, cerrar sesión o eliminar la cuenta, el router lleva a la pantalla de la etapa nueva (`redirectTo`).
 - **En el buscador solo aparecen proveedores con plan vigente**: el plan ya empezó y todavía no venció. Una ficha de un proveedor sin plan vigente vuelve al buscador.
 - **La búsqueda no distingue acentos ni mayúsculas.** Cada palabra escrita tiene que aparecer en el nombre, un rubro o la localidad. Con varios rubros elegidos, alcanza con que el proveedor tenga uno.
+- **La descripción del proveedor va plegada en la ficha** (`features/ficha/descripcion-plegable.tsx`, "Sobre este proveedor"): cerrada de entrada, se abre al tocarla y la flecha gira. En los resultados no se muestra. Si el proveedor no escribió nada, el bloque no aparece. Campo `descripcion`: texto opcional, hasta 300 caracteres, con saltos de línea; lo escribe el proveedor en Ajustes de su app. El nombre lo confirma Seba.
 - **WhatsApp se abre con `wa.me`** y un mensaje ya escrito. El número se pasa al formato internacional argentino (`549` + característica + número) aceptando cómo lo carga la gente (`0291 15 …`, `+54 9 …`). Conviene que la API ya lo guarde así.
 - **El PDF se abre en el navegador dentro de la app** (`expo-web-browser`): el teléfono ya sabe mostrarlo y no hace falta un visor propio.
 - **Las herramientas de prueba no viven en `components`:** la barra las recibe por contexto (`RanuraDev`), así se respeta la regla de dependencias. Solo existen con `__DEV__`.
