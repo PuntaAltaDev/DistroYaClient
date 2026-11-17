@@ -3,20 +3,20 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
-import { BarraSuperior } from '@/components/ui/editorial';
+import { BarraSuperior, type IconoBarra } from '@/components/ui/editorial';
 import { useAppTheme } from '@/theme';
 
 type MarcoProps = {
   alVolver?: () => void;
-  /** Muestra el engranaje de ajustes en la barra de arriba. */
-  alAjustes?: () => void;
+  /** Íconos de la barra de arriba (favoritos, avisos, ajustes…). */
+  iconos?: IconoBarra[];
   /** Botón negro de abajo. Si no está, la pantalla no lleva barra inferior. */
   accion?: { label: string; onPress: () => void; loading?: boolean };
   children: ReactNode;
 };
 
 /** Esqueleto de las pantallas: barra de arriba, contenido con scroll y barra negra abajo. */
-export function Marco({ alVolver, alAjustes, accion, children }: MarcoProps) {
+export function Marco({ alVolver, iconos, accion, children }: MarcoProps) {
   const { colors, spacing } = useAppTheme();
 
   return (
@@ -24,7 +24,7 @@ export function Marco({ alVolver, alAjustes, accion, children }: MarcoProps) {
       style={[styles.flex, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <SafeAreaView edges={accion ? ['top'] : ['top', 'bottom']} style={styles.column}>
-        <BarraSuperior alVolver={alVolver} alAjustes={alAjustes} />
+        <BarraSuperior alVolver={alVolver} iconos={iconos} />
         <ScrollView
           style={styles.flex}
           keyboardShouldPersistTaps="handled"

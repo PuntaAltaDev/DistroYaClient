@@ -1,11 +1,13 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Marco } from '@/components/ui/marco';
+import { BotonFavorito } from '@/features/proveedores/boton-favorito';
 import { LogoIniciales } from '@/features/proveedores/logo-iniciales';
 import { fechaCorta, type Proveedor } from '@/features/proveedores/proveedor';
+import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
 type FichaScreenProps = {
@@ -15,15 +17,22 @@ type FichaScreenProps = {
   alVerLista: () => void;
   alWhatsapp: () => void;
   alLlamar: () => void;
+  /** Está entre sus favoritos y, si lo está, si recibe sus avisos. */
+  favorito?: { avisosActivos: boolean };
+  alFavorito: () => void;
+  alCambiarAvisos: (activos: boolean) => void;
 };
 
-/** Ficha del proveedor: quién es, sus rubros, cómo contactarlo y su lista de precios. */
+/** Ficha del proveedor: quién es, sus rubros, favorito y avisos, cómo contactarlo y su lista. */
 export function FichaScreen({
   proveedor: p,
   alVolver,
   alVerLista,
   alWhatsapp,
   alLlamar,
+  favorito,
+  alFavorito,
+  alCambiarAvisos,
 }: FichaScreenProps) {
   const { colors, spacing, radius } = useAppTheme();
 
@@ -32,7 +41,10 @@ export function FichaScreen({
       alVolver={alVolver}
       accion={p.listaUrl ? { label: 'Ver lista de precios', onPress: alVerLista } : undefined}>
       <Animated.View entering={FadeIn.duration(350)} style={{ gap: spacing.lg }}>
-        <LogoIniciales razonSocial={p.razonSocial} grande />
+        <View style={styles.encabezado}>
+          <LogoIniciales razonSocial={p.razonSocial} grande />
+          <BotonFavorito marcado={!!favorito} onPress={alFavorito} size={26} />
+        </View>
         <View style={{ gap: spacing.xs }}>
           <AppText variant="title" accessibilityRole="header">
             {p.razonSocial}
@@ -58,6 +70,33 @@ export function FichaScreen({
           ))}
         </View>
       </Animated.View>
+
+      {favorito ? (
+        <Animated.View entering={FadeInDown.duration(300)}>
+          {/* Solo el interruptor responde al toque: así en web no se cambia dos veces. */}
+          <View
+            style={[
+              styles.interruptor,
+              { borderColor: colors.border, gap: spacing.md, paddingVertical: spacing.md },
+            ]}>
+            <View style={[styles.textos, { gap: spacing.xxs }]}>
+              <AppText variant="headline">Recibir sus avisos</AppText>
+              <AppText variant="footnote" color="textSecondary">
+                Promociones y listas nuevas. Sigue en tus favoritos aunque los apagues.
+              </AppText>
+            </View>
+            <Switch
+              value={favorito.avisosActivos}
+              onValueChange={(activos) => {
+                haptics.select();
+                alCambiarAvisos(activos);
+              }}
+              trackColor={{ true: colors.primary, false: colors.borderStrong }}
+              accessibilityLabel="Recibir sus avisos"
+            />
+          </View>
+        </Animated.View>
+      ) : null}
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.sm }}>
         <AppText variant="overline" color="textSecondary">
@@ -119,6 +158,13 @@ function Canal({ icono, titulo, detalle, onPress }: CanalProps) {
 }
 
 const styles = StyleSheet.create({
+  encabezado: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  interruptor: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
   rubros: { flexDirection: 'row', flexWrap: 'wrap' },
   grupo: { borderTopWidth: StyleSheet.hairlineWidth },
   fila: {

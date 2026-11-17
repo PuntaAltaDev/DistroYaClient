@@ -69,9 +69,10 @@ export default function RootLayout() {
  * Pasa los colores de DistroYa a la navegación y arma las rutas.
  *
  * Cada grupo de pantallas solo existe en su etapa (rutas protegidas): sin sesión, la bienvenida
- * y el acceso; con sesión, el buscador, la ficha del proveedor y los ajustes. Cuando cambia la
- * etapa (entrar, cerrar sesión, eliminar la cuenta), Expo Router saca las pantallas que ya no
- * corresponden y lleva a la de la etapa nueva (`redirectTo`). Ayuda y legales están siempre.
+ * y el acceso; con sesión, el buscador, la ficha del proveedor, favoritos y ajustes.
+ * Cuando cambia la etapa (entrar, cerrar sesión, eliminar la cuenta), Expo Router saca las
+ * pantallas que ya no corresponden y lleva a la de la etapa nueva (`redirectTo`). Ayuda y
+ * legales están siempre.
  */
 function ThemedNavigation() {
   const { scheme, colors } = useAppTheme();
@@ -106,6 +107,7 @@ function ThemedNavigation() {
           <Stack.Screen name="buscar" />
           <Stack.Screen name="proveedor/[id]" />
           <Stack.Screen name="ajustes" />
+          <Stack.Screen name="favoritos" />
         </Stack.Protected>
         <Stack.Screen name="ayuda" />
         <Stack.Screen name="legal/[documento]" />

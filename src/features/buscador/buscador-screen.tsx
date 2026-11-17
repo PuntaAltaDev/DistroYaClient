@@ -5,10 +5,10 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { Chip } from '@/components/ui/chip';
 import { Titular } from '@/components/ui/editorial';
-import { Icon } from '@/components/ui/icon';
 import { LineField } from '@/components/ui/line-field';
+import type { IconoBarra } from '@/components/ui/editorial';
 import { Marco } from '@/components/ui/marco';
-import { LogoIniciales } from '@/features/proveedores/logo-iniciales';
+import { FilaProveedor } from '@/features/proveedores/fila-proveedor';
 import type { Proveedor } from '@/features/proveedores/proveedor';
 import { useAppTheme } from '@/theme';
 
@@ -19,11 +19,21 @@ type BuscadorScreenProps = {
   /** Rubros para filtrar. */
   rubros: readonly string[];
   alAbrir: (id: string) => void;
-  alAjustes: () => void;
+  esFavorito: (id: string) => boolean;
+  alFavorito: (id: string) => void;
+  /** Íconos de la barra de arriba (favoritos, avisos, ajustes). */
+  iconos: IconoBarra[];
 };
 
 /** Inicio del cliente: buscar por texto, filtrar por rubros y ver los resultados. */
-export function BuscadorScreen({ proveedores, rubros, alAbrir, alAjustes }: BuscadorScreenProps) {
+export function BuscadorScreen({
+  proveedores,
+  rubros,
+  alAbrir,
+  esFavorito,
+  alFavorito,
+  iconos,
+}: BuscadorScreenProps) {
   const { colors, spacing } = useAppTheme();
   const [texto, setTexto] = useState('');
   const [elegidos, setElegidos] = useState<string[]>([]);
@@ -32,7 +42,7 @@ export function BuscadorScreen({ proveedores, rubros, alAbrir, alAjustes }: Busc
   const conFiltro = texto.trim() !== '' || elegidos.length > 0;
 
   return (
-    <Marco alAjustes={alAjustes}>
+    <Marco iconos={iconos}>
       <Titular lineas={['Buscá tu']} acento="proveedor." clave="buscar" />
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.lg }}>
@@ -85,34 +95,13 @@ export function BuscadorScreen({ proveedores, rubros, alAbrir, alAjustes }: Busc
 
         <View style={[styles.lista, { borderTopColor: colors.border }]}>
           {resultados.map((p) => (
-            <Pressable
+            <FilaProveedor
               key={p.id}
-              onPress={() => alAbrir(p.id)}
-              accessibilityRole="button"
-              accessibilityLabel={`${p.razonSocial}, ${p.rubros.join(', ')}, ${p.localidad}`}
-              style={({ pressed }) => [
-                styles.fila,
-                {
-                  gap: spacing.md,
-                  paddingVertical: spacing.md,
-                  borderBottomColor: colors.border,
-                  backgroundColor: pressed ? colors.primarySoft : 'transparent',
-                },
-              ]}>
-              <LogoIniciales razonSocial={p.razonSocial} />
-              <View style={[styles.textos, { gap: spacing.xxs }]}>
-                <AppText variant="headline" numberOfLines={1}>
-                  {p.razonSocial}
-                </AppText>
-                <AppText variant="footnote" color="textSecondary" numberOfLines={1}>
-                  {p.rubros.join(' · ')}
-                </AppText>
-                <AppText variant="footnote" color="textMuted" numberOfLines={1}>
-                  {p.localidad}
-                </AppText>
-              </View>
-              <Icon name="forward" size={18} color="textSecondary" />
-            </Pressable>
+              proveedor={p}
+              favorito={esFavorito(p.id)}
+              alAbrir={() => alAbrir(p.id)}
+              alFavorito={() => alFavorito(p.id)}
+            />
           ))}
         </View>
 
@@ -129,10 +118,4 @@ export function BuscadorScreen({ proveedores, rubros, alAbrir, alAjustes }: Busc
 const styles = StyleSheet.create({
   encabezado: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   lista: { borderTopWidth: StyleSheet.hairlineWidth },
-  fila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  textos: { flex: 1 },
 });

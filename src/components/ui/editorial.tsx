@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
-import { Icon } from '@/components/ui/icon';
+import { Icon, type IconName } from '@/components/ui/icon';
 import { useRanuraDev } from '@/components/ui/ranura-dev';
 import { fonts, useAppTheme } from '@/theme';
 
@@ -16,14 +16,17 @@ type BarraSuperiorProps = {
   /** Dato a la derecha, después de los íconos (ej.: "01 / 06" en el registro). */
   derecha?: string;
   alVolver?: () => void;
-  /** Si está, muestra el engranaje que abre los ajustes. */
-  alAjustes?: () => void;
+  /** Íconos de la pantalla (favoritos, avisos, ajustes…), pegados a la derecha. */
+  iconos?: IconoBarra[];
   /** Avance de 0 a 1. Si está, la línea de abajo crece con cada paso, en ámbar. */
   progreso?: number;
 };
 
+/** Un ícono de la barra de arriba que abre otra pantalla. */
+export type IconoBarra = { icono: IconName; etiqueta: string; onPress: () => void };
+
 /** Barra de arriba: marca a la izquierda, íconos a la derecha y una línea debajo. */
-export function BarraSuperior({ derecha, alVolver, alAjustes, progreso }: BarraSuperiorProps) {
+export function BarraSuperior({ derecha, alVolver, iconos, progreso }: BarraSuperiorProps) {
   const { colors, spacing, motion } = useAppTheme();
   const herramientasDev = useRanuraDev();
   const conAvance = progreso !== undefined;
@@ -69,15 +72,16 @@ export function BarraSuperior({ derecha, alVolver, alAjustes, progreso }: BarraS
         <View style={[styles.fila, { gap: spacing.lg }]}>
           {herramientasDev}
           <CambioDeModo />
-          {alAjustes ? (
+          {iconos?.map(({ icono, etiqueta, onPress }) => (
             <Pressable
-              onPress={alAjustes}
-              hitSlop={12}
+              key={etiqueta}
+              onPress={onPress}
+              hitSlop={10}
               accessibilityRole="button"
-              accessibilityLabel="Ajustes">
-              <Icon name="ajustes" size={18} color="textSecondary" />
+              accessibilityLabel={etiqueta}>
+              <Icon name={icono} size={18} color="textSecondary" />
             </Pressable>
-          ) : null}
+          ))}
           {derecha ? (
             <AppText variant="caption" style={styles.derecha}>
               {derecha}
