@@ -1,3 +1,4 @@
+import { comercioGuardado, type Comercio } from '@/features/comercio/comercio';
 import { avisosGuardados, leidosGuardados, type AvisoCliente } from '@/features/avisos/avisos';
 import { favoritosGuardados, type Favorito } from '@/features/favoritos/favoritos';
 import { borrar, guardar, leer } from '@/lib/almacen';
@@ -6,7 +7,7 @@ import { borrar, guardar, leer } from '@/lib/almacen';
 export type MetodoAcceso = 'email' | 'google';
 
 /**
- * La cuenta del cliente. El cliente no tiene registro ni aprobación: entra y busca.
+ * La cuenta del cliente. Entra, completa su comercio una vez (sin aprobación) y busca.
  * Todavía no hay servidor: se guarda en el teléfono. Con el login de Seba (Entra External ID,
  * rol Cliente), la sesión la confirma la API.
  */
@@ -18,6 +19,8 @@ export type Cuenta = {
   email?: string;
   /** Qué versión de los términos y la privacidad aceptó, y cuándo (ISO). Ver `features/legal`. */
   terminos?: { version: string; fecha: string };
+  /** Su comercio. Con sesión y sin comercio, va al registro. */
+  comercio?: Comercio;
   /** Proveedores favoritos. Con la API, se guardan en el servidor. */
   favoritos: Favorito[];
   /** Bandeja de avisos de proveedores. Con la API, la manda el servidor. */
@@ -45,6 +48,7 @@ export async function cargarCuenta(): Promise<Cuenta> {
       typeof guardada.terminos?.version === 'string' && typeof guardada.terminos.fecha === 'string'
         ? guardada.terminos
         : undefined,
+    comercio: comercioGuardado(guardada.comercio),
     favoritos: favoritosGuardados(guardada.favoritos),
     avisos: avisosGuardados(guardada.avisos),
     leidos: leidosGuardados(guardada.leidos),

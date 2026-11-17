@@ -69,7 +69,8 @@ export default function RootLayout() {
  * Pasa los colores de DistroYa a la navegación y arma las rutas.
  *
  * Cada grupo de pantallas solo existe en su etapa (rutas protegidas): sin sesión, la bienvenida
- * y el acceso; con sesión, el buscador, la ficha del proveedor, favoritos, avisos y ajustes.
+ * y el acceso; con sesión y sin comercio, el registro (también las cuentas que ya existían, una
+ * vez); con comercio, el buscador, la ficha del proveedor, favoritos, avisos y ajustes.
  * Cuando cambia la etapa (entrar, cerrar sesión, eliminar la cuenta), Expo Router saca las
  * pantallas que ya no corresponden y lleva a la de la etapa nueva (`redirectTo`). Ayuda y
  * legales están siempre.
@@ -78,7 +79,8 @@ function ThemedNavigation() {
   const { scheme, colors } = useAppTheme();
   const { cuenta } = useCuenta();
   const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
-  const destino = cuenta.iniciada ? '/buscar' : '/';
+  const conComercio = cuenta.iniciada && !!cuenta.comercio;
+  const destino = !cuenta.iniciada ? '/' : conComercio ? '/buscar' : '/registro';
 
   return (
     <ThemeProvider
@@ -103,7 +105,10 @@ function ThemedNavigation() {
           <Stack.Screen name="index" />
           <Stack.Screen name="entrada" />
         </Stack.Protected>
-        <Stack.Protected guard={cuenta.iniciada} redirectTo={destino}>
+        <Stack.Protected guard={cuenta.iniciada && !cuenta.comercio} redirectTo={destino}>
+          <Stack.Screen name="registro" />
+        </Stack.Protected>
+        <Stack.Protected guard={conComercio} redirectTo={destino}>
           <Stack.Screen name="buscar" />
           <Stack.Screen name="proveedor/[id]" />
           <Stack.Screen name="ajustes" />
