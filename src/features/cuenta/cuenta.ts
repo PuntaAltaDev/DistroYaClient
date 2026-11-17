@@ -1,4 +1,4 @@
-import { avisosGuardados, type AvisoCliente } from '@/features/avisos/avisos';
+import { avisosGuardados, leidosGuardados, type AvisoCliente } from '@/features/avisos/avisos';
 import { favoritosGuardados, type Favorito } from '@/features/favoritos/favoritos';
 import { borrar, guardar, leer } from '@/lib/almacen';
 
@@ -22,9 +22,11 @@ export type Cuenta = {
   favoritos: Favorito[];
   /** Bandeja de avisos de proveedores. Con la API, la manda el servidor. */
   avisos: AvisoCliente[];
+  /** Ids de los avisos que ya vio (al abrir la bandeja, todos). */
+  leidos: string[];
 };
 
-export const CUENTA_INICIAL: Cuenta = { iniciada: false, favoritos: [], avisos: [] };
+export const CUENTA_INICIAL: Cuenta = { iniciada: false, favoritos: [], avisos: [], leidos: [] };
 
 /** La "v1" permite cambiar la forma de los datos más adelante sin romper lo ya guardado. */
 const CLAVE = 'cuenta.v1';
@@ -45,6 +47,7 @@ export async function cargarCuenta(): Promise<Cuenta> {
         : undefined,
     favoritos: favoritosGuardados(guardada.favoritos),
     avisos: avisosGuardados(guardada.avisos),
+    leidos: leidosGuardados(guardada.leidos),
   };
 }
 

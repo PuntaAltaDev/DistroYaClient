@@ -25,6 +25,7 @@ describe('cargarCuenta', () => {
       terminos: { version: '2026-11-14', fecha: '2026-11-14T10:00:00.000Z' },
       favoritos: [{ proveedorId: 'p1', avisosActivos: false, desde: '2026-11-15T10:00:00.000Z' }],
       avisos: [],
+      leidos: ['a1'],
     };
     guardado(cuenta);
     expect(await cargarCuenta()).toEqual(cuenta);
@@ -38,6 +39,7 @@ describe('cargarCuenta', () => {
       terminos: { version: 1 },
       favoritos: 'todos',
       avisos: [{ id: 1 }],
+      leidos: 'todos',
     });
     expect(await cargarCuenta()).toEqual({
       iniciada: true,
@@ -46,6 +48,7 @@ describe('cargarCuenta', () => {
       terminos: undefined,
       favoritos: [],
       avisos: [],
+      leidos: [],
     });
   });
 });
