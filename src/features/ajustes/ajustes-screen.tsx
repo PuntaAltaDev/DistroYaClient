@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
+import { direccionCompleta } from '@/features/comercio/comercio';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
@@ -19,10 +20,10 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
   { valor: 'system', etiqueta: 'Como el teléfono' },
 ];
 
-/** Ajustes del cliente: cómo se ve la app, su cuenta, la ayuda y lo legal. */
+/** Ajustes del cliente: cómo se ve la app, su comercio, su cuenta, la ayuda y lo legal. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
-  const { spacing, mode, setMode } = useAppTheme();
-  const { actualizar, reiniciar } = useCuenta();
+  const { colors, spacing, mode, setMode } = useAppTheme();
+  const { cuenta, actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
 
@@ -62,12 +63,38 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
         ))}
       </Grupo>
 
-      <Grupo titulo="CUENTA" orden={1}>
+      {cuenta.comercio ? (
+        <Grupo titulo="TU COMERCIO" orden={1}>
+          <Pressable
+            onPress={() => {
+              haptics.tap();
+              router.push('/comercio');
+            }}
+            accessibilityRole="button"
+            accessibilityHint="Abre los datos de tu comercio para cambiarlos"
+            style={[
+              styles.fila,
+              { borderBottomColor: colors.border, paddingVertical: spacing.md },
+            ]}>
+            <View style={styles.textos}>
+              <AppText variant="body" numberOfLines={1}>
+                {cuenta.comercio.nombreComercio}
+              </AppText>
+              <AppText variant="footnote" color="textSecondary" numberOfLines={2}>
+                {direccionCompleta(cuenta.comercio)}
+              </AppText>
+            </View>
+            <Icon name="forward" size={18} color="textSecondary" />
+          </Pressable>
+        </Grupo>
+      ) : null}
+
+      <Grupo titulo="CUENTA" orden={2}>
         <Fila etiqueta="Cerrar sesión" onPress={cerrarSesion} />
         <Fila etiqueta="Eliminar cuenta" color="danger" onPress={() => setConfirmando(true)} />
       </Grupo>
 
-      <Grupo titulo="AYUDA Y LEGAL" orden={2}>
+      <Grupo titulo="AYUDA Y LEGAL" orden={3}>
         <Fila etiqueta="Ayuda y contacto" flecha onPress={() => router.push('/ayuda')} />
         <Fila etiqueta="Términos y condiciones" flecha onPress={() => verLegal('terminos')} />
         <Fila etiqueta="Política de privacidad" flecha onPress={() => verLegal('privacidad')} />
@@ -170,6 +197,7 @@ function Fila({
 
 const styles = StyleSheet.create({
   grupo: { borderTopWidth: StyleSheet.hairlineWidth },
+  textos: { flex: 1, gap: 2 },
   fila: {
     minHeight: 56,
     flexDirection: 'row',

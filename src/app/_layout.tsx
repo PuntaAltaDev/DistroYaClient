@@ -110,6 +110,7 @@ function ThemedNavigation() {
         </Stack.Protected>
         <Stack.Protected guard={conComercio} redirectTo={destino}>
           <Stack.Screen name="buscar" />
+          <Stack.Screen name="comercio" />
           <Stack.Screen name="proveedor/[id]" />
           <Stack.Screen name="ajustes" />
           <Stack.Screen name="favoritos" />
