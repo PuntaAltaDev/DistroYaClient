@@ -21,8 +21,7 @@ const ICONS = {
   ajustes: { ios: 'gearshape', android: 'settings', web: 'settings' },
   chat: { ios: 'message', android: 'chat', web: 'chat' },
   phone: { ios: 'phone', android: 'call', web: 'call' },
-  favorito: { ios: 'heart', android: 'favorite', web: 'favorite' },
-  favoritoMarcado: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
+  favorito: { ios: 'star', android: 'star', web: 'star' },
   avisos: { ios: 'bell', android: 'notifications', web: 'notifications' },
 } as const satisfies Record<string, SymbolViewProps['name']>;
 

@@ -18,7 +18,7 @@ type FavoritosScreenProps = {
   alQuitar: (id: string) => void;
 };
 
-/** "Mis favoritos": los proveedores marcados con el corazón. */
+/** "Mis favoritos": los proveedores marcados con la estrella. */
 export function FavoritosScreen({
   proveedores,
   ocultos,
@@ -35,7 +35,7 @@ export function FavoritosScreen({
       <Animated.View entering={FadeIn.delay(250).duration(400)} style={{ gap: spacing.md }}>
         {proveedores.length === 0 ? (
           <AppText variant="subhead" color="textSecondary">
-            Todavía no marcaste ninguno. Tocá el corazón de un proveedor para tenerlo acá y recibir
+            Todavía no marcaste ninguno. Tocá la estrella de un proveedor para tenerlo acá y recibir
             sus listas nuevas.
           </AppText>
         ) : (

@@ -39,7 +39,7 @@ src/
     proveedores/  Qué es un proveedor, cuándo su plan está vigente, links de contacto y la lista.
     buscador/     Búsqueda por texto y rubros, y la pantalla de inicio con los resultados.
     ficha/        Ficha del proveedor: favorito, avisos, contacto y lista de precios.
-    favoritos/    Marcar proveedores con el corazón y la pantalla "Mis favoritos".
+    favoritos/    Marcar proveedores con la estrella y la pantalla "Mis favoritos".
     avisos/       Avisos de proveedores: reglas, bandeja y abrir la notificación tocada.
     ajustes/      Apariencia, tu comercio, cerrar sesión, eliminar cuenta, ayuda y legal.
     ayuda/        Contacto (WhatsApp y email) y preguntas frecuentes.
@@ -118,7 +118,7 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **WhatsApp se abre con `wa.me`** y un mensaje ya escrito. El número se pasa al formato internacional argentino (`549` + característica + número) aceptando cómo lo carga la gente (`0291 15 …`, `+54 9 …`). Conviene que la API ya lo guarde así.
 - **El PDF se abre en el navegador dentro de la app** (`expo-web-browser`): el teléfono ya sabe mostrarlo y no hace falta un visor propio.
 - **Las herramientas de prueba no viven en `components`:** la barra las recibe por contexto (`RanuraDev`), así se respeta la regla de dependencias. Solo existen con `__DEV__`.
-- **Favoritos:** el corazón está en cada resultado, en "Mis favoritos" y en la ficha. Se guardan como `{ proveedorId, avisosActivos, desde }`, igual que en Proveedores. "Mis favoritos" muestra solo los de plan vigente, del último marcado al primero, y avisa cuántos no se ven.
+- **Favoritos:** la estrella está en cada resultado, en "Mis favoritos" y en la ficha. Se guardan como `{ proveedorId, avisosActivos, desde }`, igual que en Proveedores. "Mis favoritos" muestra solo los de plan vigente, del último marcado al primero, y avisa cuántos no se ven.
 - **Avisos de proveedores (UC13):** tienen la forma `{ id, proveedorId, proveedorNombre, tipo, titulo, texto, fecha }`, con `tipo` `aviso` (lo escribe el proveedor para sus favoritos o para todos sus clientes, sin límite) o `lista-nueva` (automático, solo a favoritos). En la ficha de un favorito, "Recibir sus avisos" (prendido de entrada) apaga los dos tipos sin sacarlo de favoritos. Al tocar un aviso, en la bandeja o en el teléfono (`data.url`), se abre el perfil del proveedor. En web no hay notificaciones.
 - **Leídos y no leídos, igual que en Proveedores:** la cuenta guarda los ids leídos (`leidos`). Al abrir la bandeja, todo pasa a leído, pero lo que era nuevo sigue con un punto mientras está abierta. Afuera, el ícono de avisos lleva el número de nuevos (hasta "9+"), y nada si no hay.
 - **El permiso de notificaciones se pide al marcar el primer favorito**, que es cuando empiezan a servir. Hoy los avisos se simulan con notificaciones locales (andan en Expo Go). Los push reales necesitan una development build, el plugin `expo-notifications` en `app.json` y Notification Hubs.

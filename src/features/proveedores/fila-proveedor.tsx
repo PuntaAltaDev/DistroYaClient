@@ -14,11 +14,11 @@ type FilaProveedorProps = {
   alFavorito: () => void;
 };
 
-/** Un proveedor en una lista (resultados, favoritos): logo, nombre, rubros, localidad y corazón. */
+/** Un proveedor en una lista (resultados, favoritos): logo, nombre, rubros, localidad y estrella. */
 export function FilaProveedor({ proveedor: p, favorito, alAbrir, alFavorito }: FilaProveedorProps) {
   const { colors, spacing } = useAppTheme();
 
-  // El corazón va al lado de la parte que abre la ficha, no adentro: en web un botón no puede
+  // La estrella va al lado de la parte que abre la ficha, no adentro: en web un botón no puede
   // contener a otro.
   return (
     <View style={[styles.fila, { gap: spacing.md, borderBottomColor: colors.border }]}>
