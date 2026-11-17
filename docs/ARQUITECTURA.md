@@ -15,6 +15,7 @@ La base (tema, componentes, almacén, acceso, herramientas de prueba y reglas) e
 | Links       | `Linking` de React Native (WhatsApp, teléfono, email)           |
 | PDF         | expo-web-browser (el navegador del teléfono muestra el PDF)     |
 | Guardado    | expo-sqlite (kv-store) en el teléfono; `localStorage` en la web |
+| Avisos      | expo-notifications (locales; los push llegan con el backend)    |
 | Pruebas     | Jest 30 con jest-expo                                           |
 
 ## Carpetas
@@ -31,21 +32,23 @@ src/
   features/       Una carpeta por tema de negocio, con sus pantallas y su lógica.
     bienvenida/   Primera pantalla de la app: logo, nombre, frase y el botón "Empezar".
     acceso/       Registro o inicio de sesión (Google, o email y su código en la misma pantalla).
-    cuenta/       Sesión del cliente guardada en el teléfono.
+    cuenta/       Sesión, favoritos y bandeja de avisos del cliente, guardados en el teléfono.
     proveedores/  Qué es un proveedor, cuándo su plan está vigente, links de contacto y la lista.
     buscador/     Búsqueda por texto y rubros, y la pantalla de inicio con los resultados.
-    ficha/        Ficha del proveedor: contacto y lista de precios.
+    ficha/        Ficha del proveedor: favorito, avisos, contacto y lista de precios.
+    favoritos/    Marcar proveedores con el corazón y la pantalla "Mis favoritos".
+    avisos/       Avisos de proveedores: reglas, bandeja y abrir la notificación tocada.
     ajustes/      Apariencia, cerrar sesión, eliminar cuenta, ayuda y legal.
     ayuda/        Contacto (WhatsApp y email) y preguntas frecuentes.
     legal/        Términos y condiciones, política de privacidad y su versión vigente.
     dev/          Herramientas de prueba (solo en desarrollo): volver al inicio y simular al servidor.
   data/           Datos de ejemplo (se reemplazan por la API).
   lib/            Servicios y ayudas sin pantalla (almacén, ajustes, vibración, abrir links y PDF,
-                  botón "atrás" de Android).
+                  notificaciones del teléfono, botón "atrás" de Android).
   theme/          Colores, tipografía, espacios y animaciones.
 ```
 
-Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`, `data` y `theme`; `components` usa solo `lib` y `theme`. Nada de `components` importa de `features`. Entre carpetas de `features`, en un solo sentido: `buscador`, `ficha` y `dev` usan `proveedores`; `proveedores` no usa ninguna de ellas.
+Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`, `data` y `theme`; `components` usa solo `lib` y `theme`. Nada de `components` importa de `features`. Entre carpetas de `features`, en un solo sentido: `buscador`, `ficha`, `favoritos` y `dev` usan `proveedores`; `avisos` usa `favoritos` y `proveedores`; `cuenta` usa `favoritos` y `avisos` (guarda los dos); `dev` usa todas. `proveedores` no usa ninguna.
 
 ## Reglas del código
 
@@ -81,6 +84,9 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 | PDF de la lista de precios     | `PDF_DE_PRUEBA` en `src/data/proveedores.ts`                                 | PDF del proveedor en Blob Storage                      |
 | Login (email y código, Google) | `alEnviarCodigo`, `alConfirmar` y `alGoogle` en `features/acceso/acceso.tsx` | Entra External ID, rol Cliente                         |
 | Sesión del cliente             | `features/cuenta/` (se guarda en el teléfono)                                | Sesión de la API                                       |
+| Favoritos                      | `favoritos` en la cuenta (`features/cuenta/use-favoritos.ts`)                | Favoritos del cliente en la API                        |
+| Bandeja de avisos              | `avisos` en la cuenta                                                        | Avisos de la API (y push)                              |
+| Llegada de avisos y listas     | Simulador en `features/dev/simulaciones.ts` (notificación local)             | Push del servidor (Notification Hubs)                  |
 | Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx`                    | Baja de la cuenta en la API, y después borrar lo local |
 | Vencer el plan, restaurar      | Simulador en `features/dev/simulaciones.ts`                                  | Cambios reales en el servidor                          |
 | Textos legales                 | `features/legal/textos.ts` (borrador)                                        | Textos revisados por un abogado                        |
@@ -100,11 +106,13 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **La bienvenida se muestra una sola vez** (`iniciada` en la cuenta). Se entra con el email (código de 6 números) o con Google. **Ambos están simulados**: cualquier código sirve y Google entra sin pedir nada. Registrarse e iniciar sesión son la misma pantalla.
 - **El cliente no tiene registro ni aprobación**: entra y busca. La cuenta guarda solo la sesión, el método, el email y los términos aceptados.
 - **Términos y privacidad se aceptan al entrar** ("Al continuar aceptás…"). La cuenta guarda la versión aceptada (`VERSION_LEGAL`) y la fecha.
-- **Navegación con rutas protegidas** (`Stack.Protected` en `app/_layout.tsx`): sin sesión, `/` y `/entrada`; con sesión, `/buscar`, `/proveedor/[id]` y `/ajustes`. Ayuda y legales están siempre. Al entrar, cerrar sesión o eliminar la cuenta, el router lleva a la pantalla de la etapa nueva (`redirectTo`).
+- **Navegación con rutas protegidas** (`Stack.Protected` en `app/_layout.tsx`): sin sesión, `/` y `/entrada`; con sesión, `/buscar`, `/proveedor/[id]`, `/favoritos`, `/avisos` y `/ajustes`. Ayuda y legales están siempre. Al entrar, cerrar sesión o eliminar la cuenta, el router lleva a la pantalla de la etapa nueva (`redirectTo`).
 - **En el buscador solo aparecen proveedores con plan vigente**: el plan ya empezó y todavía no venció. Una ficha de un proveedor sin plan vigente vuelve al buscador.
 - **La búsqueda no distingue acentos ni mayúsculas.** Cada palabra escrita tiene que aparecer en el nombre, un rubro o la localidad. Con varios rubros elegidos, alcanza con que el proveedor tenga uno.
 - **WhatsApp se abre con `wa.me`** y un mensaje ya escrito. El número se pasa al formato internacional argentino (`549` + característica + número) aceptando cómo lo carga la gente (`0291 15 …`, `+54 9 …`). Conviene que la API ya lo guarde así.
 - **El PDF se abre en el navegador dentro de la app** (`expo-web-browser`): el teléfono ya sabe mostrarlo y no hace falta un visor propio.
 - **Las herramientas de prueba no viven en `components`:** la barra las recibe por contexto (`RanuraDev`), así se respeta la regla de dependencias. Solo existen con `__DEV__`.
-- **Avisos push (UC13) quedan para cuando esté el backend**: necesitan una development build y Notification Hubs.
+- **Favoritos:** el corazón está en cada resultado, en "Mis favoritos" y en la ficha. Se guardan como `{ proveedorId, avisosActivos, desde }`, igual que en Proveedores. "Mis favoritos" muestra solo los de plan vigente, del último marcado al primero, y avisa cuántos no se ven.
+- **Avisos de proveedores (UC13):** tienen la forma `{ id, proveedorId, proveedorNombre, tipo, titulo, texto, fecha }`, con `tipo` `aviso` (lo escribe el proveedor para sus favoritos o para todos sus clientes, sin límite) o `lista-nueva` (automático, solo a favoritos). En la ficha de un favorito, "Recibir sus avisos" (prendido de entrada) apaga los dos tipos sin sacarlo de favoritos. Al tocar un aviso, en la bandeja o en el teléfono (`data.url`), se abre el perfil del proveedor. En web no hay notificaciones.
+- **El permiso de notificaciones se pide al marcar el primer favorito**, que es cuando empiezan a servir. Hoy los avisos se simulan con notificaciones locales (andan en Expo Go). Los push reales necesitan una development build, el plugin `expo-notifications` en `app.json` y Notification Hubs.
 - **Sin pantallas de carga, error o sin conexión todavía** en lo que depende de la API: se hacen cuando exista el contrato de la API.
