@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 
 import { RUBROS } from '@/data/rubros';
+import { useAbrirAvisoTocado } from '@/features/avisos/abrir-aviso-tocado';
 import { BuscadorScreen } from '@/features/buscador/buscador-screen';
 import { useFavoritos } from '@/features/cuenta/use-favoritos';
 import { useProveedores } from '@/features/proveedores/proveedores-provider';
@@ -9,6 +10,7 @@ import { useProveedores } from '@/features/proveedores/proveedores-provider';
 export default function Buscar() {
   const { proveedores } = useProveedores();
   const { favoritoDe, alternar } = useFavoritos();
+  useAbrirAvisoTocado();
 
   return (
     <BuscadorScreen
@@ -19,6 +21,7 @@ export default function Buscar() {
       alFavorito={alternar}
       iconos={[
         { icono: 'favorito', etiqueta: 'Mis favoritos', onPress: () => router.push('/favoritos') },
+        { icono: 'avisos', etiqueta: 'Avisos', onPress: () => router.push('/avisos') },
         { icono: 'ajustes', etiqueta: 'Ajustes', onPress: () => router.push('/ajustes') },
       ]}
     />
